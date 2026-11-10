@@ -1,0 +1,48 @@
+# ====================
+# IDE 相关 (CLion 等)
+# ====================
+# 忽略 CLion 的配置目录
+.idea/
+
+# ====================
+# CMake 构建产物
+# ====================
+# 忽略所有以 cmake-build- 开头的目录（包含 Debug, Release 等）
+cmake-build-*/
+build/
+cmake-build-debug/
+cmake-build-release/
+
+# 忽略 CMake 生成的文件
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+compile_commands.json
+
+# ====================
+# 可执行文件与目标文件
+# ====================
+# 忽略编译出的可执行文件（如果你有明确的输出名）
+GtkmmDemo
+RimeDictHelperLinux
+*.o
+*.obj
+*.exe
+
+# ====================
+# 临时文件与日志
+# ====================
+*.log
+*.txt.tmp
+Testing/
+Testing/Temporary/
+
+# 你的截图里有一个乱码的 tree.txt 生成物，如果不需要提交可以加上：
+tree.txt
+
+# ====================
+# 系统文件
+# ====================
+.DS_Store
+Thumbs.db
