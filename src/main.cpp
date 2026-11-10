@@ -51,9 +51,21 @@ public:
 
         auto* edit_box_h = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL, 6));
 
-        auto* label_word = Gtk::manage(new Gtk::Label("词条"));
-        auto* label_code = Gtk::manage(new Gtk::Label("编码"));
-        auto* label_weight = Gtk::manage(new Gtk::Label("权重"));
+        auto* label_volume = Gtk::manage(new Gtk::Label("音量"));
+        auto* label_seek = Gtk::manage(new Gtk::Label("跳转"));
+        edit_box_h->pack_start(*label_volume, Gtk::PACK_EXPAND_WIDGET);
+        // edit_box_h->pack_start(entry_volume_, Gtk::PACK_EXPAND_WIDGET);
+
+
+        // 在构造函数里配置滑块
+        // volume_scale_.set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+        // volume_scale_.set_range(0.0, 1.5); // 范围从 0（静音）到 1.5（150%）
+        volume_scale_.set_value(1.0);      // 默认音量 100%
+        volume_scale_.set_draw_value(false); // 不显示具体数字（可选）
+        volume_scale_.set_size_request(100, -1); // 可选：设置一下宽度
+        edit_box_h->pack_start(volume_scale_, Gtk::PACK_SHRINK);
+
+        edit_box_h->pack_start(*label_seek, Gtk::PACK_EXPAND_WIDGET);
         edit_box_h->pack_start(entry_seekto_, Gtk::PACK_EXPAND_WIDGET);
         main_box_v->pack_start(*edit_box_h, Gtk::PACK_SHRINK);
 
@@ -96,7 +108,15 @@ protected:
         btn_choose_file_.signal_clicked().connect(sigc::mem_fun(*this, &MyWindow::on_btn_choose_file));
         btn_pause_.signal_clicked().connect(sigc::mem_fun(*this, &MyWindow::toggle_play_pause));
         btn_seek_.signal_clicked().connect(sigc::mem_fun(*this, &MyWindow::seek));
+        volume_scale_.signal_value_changed().connect([this]() {
+            if (playbin_) {
+                // 1. 获取当前滑块的值
+                double current_volume = volume_scale_.get_value();
 
+                // 2. 利用 g_object_set 修改 playbin 的 volume 属性
+                g_object_set(playbin_, "volume", current_volume, nullptr);
+            }
+        });
     }
     void init()
     {
@@ -153,6 +173,8 @@ protected:
 
         // 改变状态开始播放
         gst_element_set_state(playbin_, GST_STATE_PLAYING);
+
+        is_playing_ = true;
     }
     void toggle_play_pause() {
         if (!playbin_) return;
@@ -202,6 +224,9 @@ protected:
 private:
     // 界面组件
     Gtk::MenuBar menubar_;
+    Gtk::Entry entry_volume_;
+    // Gtk::Scale volume_scale_; // 声明为类的成员变量
+    Gtk::HScale volume_scale_{0.0, 1.5, 0.01}; // 构造函数参数：最小值, 最大值, 步长
     Gtk::Entry entry_seekto_;
     Gtk::Button btn_choose_file_;
     Gtk::Button btn_pause_;
