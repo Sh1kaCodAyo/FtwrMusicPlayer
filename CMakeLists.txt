@@ -8,7 +8,8 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
 pkg_check_modules(GST REQUIRED gstreamer-1.0) # 新增这行
 
-add_executable(FtwrMusicPlayer src/main.cpp)
+add_executable(FtwrMusicPlayer src/main.cpp
+)
 
 # 包含头文件目录并链接库
 target_include_directories(FtwrMusicPlayer PRIVATE ${GTKMM_INCLUDE_DIRS} ${GST_INCLUDE_DIRS})
