@@ -3,6 +3,7 @@
 # ====================
 # 忽略 CLion 的配置目录
 .idea/
+.vscode/
 
 # ====================
 # CMake 构建产物
@@ -38,8 +39,7 @@ RimeDictHelperLinux
 Testing/
 Testing/Temporary/
 
-# 你的截图里有一个乱码的 tree.txt 生成物，如果不需要提交可以加上：
-tree.txt
+.clang-format
 
 # ====================
 # 系统文件

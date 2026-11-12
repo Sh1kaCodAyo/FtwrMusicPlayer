@@ -1,5 +1,7 @@
-cmake_minimum_required(VERSION 4.4)
+cmake_minimum_required(VERSION 3.15)
 project(FtwrMusicPlayer)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -9,10 +11,12 @@ pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
 pkg_check_modules(GST REQUIRED gstreamer-1.0) # 新增这行
 
 add_executable(FtwrMusicPlayer src/main.cpp
-        src/MyWindow.cpp
         src/MyWindow.h
-        src/Playlist.cpp
+        src/MyWindow.cpp
         src/Playlist.h
+        src/Playlist.cpp
+        src/ConfigManager.h
+        src/ConfigManager.cpp
 )
 
 # 包含头文件目录并链接库
