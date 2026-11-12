@@ -9,7 +9,8 @@ pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
 pkg_check_modules(GST REQUIRED gstreamer-1.0) # 新增这行
 
 add_executable(FtwrMusicPlayer src/main.cpp
-        src/main.h
+        src/MyWindow.cpp
+        src/MyWindow.h
         src/Playlist.cpp
         src/Playlist.h
 )
