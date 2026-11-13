@@ -17,6 +17,8 @@ add_executable(FtwrMusicPlayer src/main.cpp
         src/Playlist.cpp
         src/ConfigManager.h
         src/ConfigManager.cpp
+        src/Lyric.h
+        src/Lyric.cpp
 )
 
 # 包含头文件目录并链接库

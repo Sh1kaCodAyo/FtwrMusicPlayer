@@ -3,19 +3,12 @@
 //
 
 #include "MyWindow.h"
-#include <algorithm>
-#include <cctype>
-#include <filesystem>
-#include <fstream>
-#include <gst/gst.h>
-#include <gtkmm.h>
-#include <iostream>
-#include <thread>
+#include "Lyric.h"
 
 MyWindow::MyWindow() {
     // 窗口基本样式
     set_title("FtwrMusicPlayer");
-    set_default_size(400, 400);
+    set_default_size(600, 600);
     set_border_width(5);
     // set_keep_above(true);
 
@@ -94,6 +87,10 @@ MyWindow::MyWindow() {
     // 在构造函数里绑定
     tree_view_.signal_row_activated().connect(sigc::mem_fun(*this, &MyWindow::on_row_activated));
 
+    auto *lyric_box_h = Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL, 6));
+    lyric_box_h->pack_start(lyric_label_, Gtk::PACK_SHRINK);
+    // main_box_v->pack_start(*lyric_box_h, Gtk::PACK_SHRINK);
+    // lyric_label_
     main_box_v->pack_end(statusbar_, Gtk::PACK_SHRINK);
     add_events(Gdk::KEY_PRESS_MASK);
 
@@ -156,6 +153,41 @@ void MyWindow::init() {
     // 启动时自动加载默认歌单
     std::string default_playlist_path =config_.get_value("myplaylist");
     load_m3u(default_playlist_path);
+
+    // Lyric::load_lyrics("/home/ftwrjh/音乐/Love marginal.lrc");
+    // Lyric::load_lyrics("/home/ftwrjh/音乐/世末歌者2024 - 乐正绫.lrc");
+    
+    // 初始化歌词显示
+    // 在构造函数里启动一个 100 毫秒的定时器
+    Glib::signal_timeout().connect([this]() -> bool {
+        if (!playbin_ || !is_playing_) {
+            return true;
+        }
+
+        gint64 current_pos;
+        if (gst_element_query_position(playbin_, GST_FORMAT_TIME, &current_pos)) {
+            // 把当前时间转成毫秒
+            int current_ms = current_pos / 1000000; 
+            
+            // 倒序遍历（从后往前找），或者二分查找，找出当前时间对应的歌词索引
+            int target_index = -1;
+            for (size_t i = 0; i < lyrics_.size(); ++i) {
+                if (current_ms >= lyrics_[i].time_ms) {
+                    target_index = i;
+                } else {
+                    break; // 因为已经排好序了，后面的肯定比当前时间大
+                }
+            }
+
+            // 如果歌词行变了，就更新 UI
+            if (target_index != -1 && target_index != current_lyric_index_) {
+                current_lyric_index_ = target_index;
+                // lyric_label_.set_text(lyrics_[target_index].text);
+                statusbar_.push(lyrics_[target_index].text, 0);
+            }
+        }
+        return true; // 保持定时器一直运行
+    }, 100); // 100 毫秒刷新一次，肉眼看起来已经非常平滑了
 }
 
 void MyWindow::bind_events() {
@@ -331,6 +363,7 @@ void MyWindow::play_file(const std::string &filepath) {
     // 1. 【关键】先把当前的播放器停下来，清空资源
     gst_element_set_state(playbin_, GST_STATE_NULL);
 
+    Lyric::load_lyrics("/home/ftwrjh/音乐/" + getNameFromFullPath(filepath) + ".lrc");
     // 2. 将文件路径转为 URI
     std::string uri = Glib::filename_to_uri(filepath);
 

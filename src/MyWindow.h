@@ -3,10 +3,16 @@
 //
 
 #pragma once
-#include "Playlist.h"
-#include <gst/gst.h>
+#include <algorithm>
+#include <cctype>
+#include <filesystem>
+#include <fstream>
 #include <gtkmm.h>
+#include <gst/gst.h>
+#include <iostream>
+#include <thread>
 #include "ConfigManager.h"
+#include "Playlist.h"
 
 class MyWindow : public Gtk::Window {
 public:
@@ -48,6 +54,10 @@ private:
     Gtk::TreeView tree_view_;
     Glib::RefPtr<Gtk::TreeModelSort> sort_model_; // 新增排序模型（可选，但推荐存下来方便以后操作）
 
+    // 歌词
+    Gtk::Label lyric_label_; 
+    int current_lyric_index_ = -1;
+    
     Gtk::Statusbar statusbar_;
 
     // 播放器相关
