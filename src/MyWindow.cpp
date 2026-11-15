@@ -291,6 +291,7 @@ void MyWindow::load_m3u(const std::string &m3u_path) {
         return;
     }
 
+    config_.set_value("myplaylist", m3u_path);
     // 1. 清空现有列表
     list_store_->clear();
 
